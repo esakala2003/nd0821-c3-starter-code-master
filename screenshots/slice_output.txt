@@ -1,0 +1,33 @@
+education
+	 Assoc-acdm
+		 precision:1.0 recall:1.0 fbeta:1.0
+	 Some-college
+		 precision:1.0 recall:1.0 fbeta:1.0
+	 HS-grad
+		 precision:1.0 recall:1.0 fbeta:1.0
+	 Bachelors
+		 precision:1.0 recall:1.0 fbeta:1.0
+	 11th
+		 precision:1.0 recall:1.0 fbeta:1.0
+	 Assoc-voc
+		 precision:1.0 recall:1.0 fbeta:1.0
+	 12th
+		 precision:1.0 recall:1.0 fbeta:1.0
+	 Prof-school
+		 precision:1.0 recall:1.0 fbeta:1.0
+	 Masters
+		 precision:1.0 recall:1.0 fbeta:1.0
+	 10th
+		 precision:1.0 recall:1.0 fbeta:1.0
+	 5th-6th
+		 precision:1.0 recall:1.0 fbeta:1.0
+	 Doctorate
+		 precision:1.0 recall:1.0 fbeta:1.0
+	 1st-4th
+		 precision:1.0 recall:1.0 fbeta:1.0
+	 9th
+		 precision:1.0 recall:1.0 fbeta:1.0
+	 7th-8th
+		 precision:1.0 recall:1.0 fbeta:1.0
+	 Preschool
+		 precision:1.0 recall:1.0 fbeta:1.0
