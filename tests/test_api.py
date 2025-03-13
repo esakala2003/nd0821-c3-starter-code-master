@@ -8,13 +8,13 @@ from http import HTTPStatus
 from fastapi.testclient import TestClient
 import os
 import sys
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+root_dir = os.path.join(os.path.dirname(__file__), "..")
+sys.path.append(root_dir)
+
 from main import app
 
-@pytest.fixture(scope='module')
-def client():
-    test_client = TestClient(app)
-    return test_client
+client = TestClient(app)
 
 def test_greetings():
     """
@@ -25,7 +25,6 @@ def test_greetings():
     assert response.request.method == "GET"
     assert response.json() == 'Welcome to the Income Prediction API'
 
-@pytest.fixture(scope='module')
 def test_predict_status():
     """
     Tests POST predict function status
