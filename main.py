@@ -7,8 +7,9 @@ Date: 12/03/2025
 import pandas as pd
 
 #from starter.ml.model import train_model, inference
-#from starter.ml.data import process_data
-#from starter.train_model import train_save_model
+from starter.ml.data import process_data
+from starter.ml.model import inference
+from starter.train_model import train_save_model
 
 from fastapi import FastAPI
 import pickle
@@ -17,52 +18,10 @@ from pydantic import BaseModel, Field
 import os
 import logging
 import numpy as np
-#import pandas as pd
+
 
 logging.basicConfig(level=logging.INFO, format="%(name)s - %(levelname)s - %(message)s")
 logger = logging.getLogger()
-
-
-class Person(BaseModel):
-    """
-    Input data object for model inference
-    """
-
-    age: int
-    workclass: str
-    fnlgt: int
-    education: str
-    education_num: int
-    marital_status: str
-    occupation: str
-    relationship: str
-    race: str
-    sex: str
-    capital_gain: float
-    capital_loss: float
-    hours_per_week: float
-    native_country: str
-
-    class Config:
-        schema_extra = {
-            "example": {
-                "age": 39,
-                "workclass": "State-gov",
-                "fnlgt": 77516,
-                "education": "Bachelors",
-                "education_num": 13,
-                "marital_status": "Never-married",
-                "occupation": "Adm-clerical",
-                "relationship": "Husband",
-                "race": "White",
-                "sex": "Male",
-                "capital_gain": 2100,
-                "capital_loss": 0,
-                "hours_per_week": 40,
-                "native_country": "United-States",
-            }
-        }
-
 
 if "DYNO" in os.environ and os.path.isdir(".dvc"):
     # This code is necessary for Heroku to use dvc
@@ -76,8 +35,29 @@ if "DYNO" in os.environ and os.path.isdir(".dvc"):
     logger.info('removing dvc files')
     os.system("rm -r .dvc .apt/usr/lib/dvc")
 
-app = FastAPI()
+class InputData(BaseModel):
+    # Using the first row of census.csv as sample
+    age: int = Field(None, example=39)
+    workclass: str = Field(None, example='State-gov')
+    fnlgt: int = Field(None, example=77516)
+    education: str = Field(None, example='Bachelors')
+    education_num: int = Field(None, example=13)
+    marital_status: str = Field(None, example='Never-married')
+    occupation: str = Field(None, example='Adm-clerical')
+    relationship: str = Field(None, example='Not-in-family')
+    race: str = Field(None, example='White')
+    sex: str = Field(None, example='Female')
+    capital_gain: int = Field(None, example=2174)
+    capital_loss: int = Field(None, example=0)
+    hours_per_week: int = Field(None, example=40)
+    native_country: str = Field(None, example='United-States')
 
+# get encoder, trained model
+model = pickle.load(open("./model/model.pkl", "rb"))
+encoder = pickle.load(open("./model/encoder.pkl", "rb"))
+lb = pickle.load(open("./model/lb.pkl", "rb"))
+
+app = FastAPI()
 
 @app.get("/")
 async def welcome_message():
@@ -85,24 +65,11 @@ async def welcome_message():
 
 
 @app.post("/predict")
-async def predict(person: Person):
+async def predict(input_data: InputData):
     logger.info("starting POST request")
     """POST method for model inference"""
 
-    # get encoder, trained model
-    #dirname = os.path.dirname(__file__)
-    #encoder = joblib.load(os.path.join(dirname, "starter/model/encoder.joblib"))
-    #model = joblib.load(os.path.join(dirname, "starter/model/model.joblib"))
-    model = pickle.load(open("./model/model.pkl", "rb"))
-    encoder = pickle.load(open("./model/encoder.pkl", "rb"))
 
-    # handle the hyphen stuff here
-    sample = {}
-    for d in person:
-        sample[d[0].replace("_", "-")] = [d[1]]
-    sample = pd.DataFrame.from_dict(sample)
-
-    # encoding the input
     cat_features = [
         "workclass",
         "education",
@@ -113,14 +80,16 @@ async def predict(person: Person):
         "sex",
         "native-country",
     ]
-    x_categorical = sample[cat_features].values
-    x_continuous = sample.drop(*[cat_features], axis=1)
-    x_categorical = encoder.transform(x_categorical)
-    df = np.concatenate([x_continuous, x_categorical], axis=1)
-
-    # inference
-    prediction = model.predict(df)
-    result = "<=50K" if prediction[0] == 0 else ">50K"
-
-    # turn prediction into JSON
-    return {"prediction": result}
+    sample = {key.replace('_', '-'): [value] for key, value in input_data.__dict__.items()}
+    input_data = pd.DataFrame.from_dict(sample)
+    X, _, _, _ = process_data(
+        input_data,
+        categorical_features=cat_features,
+        label=None,
+        training=False,
+        encoder=encoder,
+        lb=lb
+    )
+    output = inference(model=model, X=X)[0]
+    str_out = '<=50K' if output == 0 else '>50K'
+    return {"pred": str_out}

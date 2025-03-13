@@ -6,14 +6,21 @@ Date: 11/03/2025
 import numpy as np
 from sklearn.preprocessing import LabelBinarizer, OneHotEncoder
 import pandas as pd
-import os
 from sklearn.model_selection import train_test_split
+import logging
+
+# Initialising the logger
+logging.basicConfig(filename='./logs.log',
+                    level=logging.INFO,
+                    format="%(name)s - %(levelname)s - %(message)s")
+logger = logging.getLogger(__name__)
 
 def clean_data(df):
     """
     Function to clean the input dataset.
     Return: Clean data.
     """
+    logging.info("Cleaning data ....")
     df = df.rename(columns={i:i.strip() for i in df.columns})
     str_cols = ["workclass", "education", "marital-status", "occupation",
         "relationship", "race", "sex", "native-country", "salary"]
@@ -66,7 +73,7 @@ def process_data(
         Trained LabelBinarizer if training is True, otherwise returns the binarizer
         passed in.
     """
-
+    logging.info("Processing data for the ML pipeline....")
     if label is not None:
         y = X[label]
         X = X.drop([label], axis=1)
@@ -92,25 +99,6 @@ def process_data(
     X = np.concatenate([X_continuous, X_categorical], axis=1)
     return X, y, encoder, lb
 
-if __name__ == "__main__":
-    data = pd.read_csv("./data/census.csv")
-    data_clean = clean_data(data)
-#    data_clean.to_csv("./data/census_clean.csv")
-    # Optional enhancement, use K-fold cross validation instead of a train-test split.
-    train, test = train_test_split(data_clean, test_size=0.20)
 
-    cat_features = [
-        "workclass",
-        "education",
-        "marital-status",
-        "occupation",
-        "relationship",
-        "race",
-        "sex",
-        "native-country",
-    ]
-    X_train, y_train, encoder, lb = process_data(
-        train, categorical_features=cat_features, label="salary", training=True
-    )
 
 

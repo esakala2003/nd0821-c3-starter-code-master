@@ -1,39 +1,36 @@
 import os
-from ml.data import process_data
-from ml.model import inference, compute_model_metrics
+from starter.ml.data import process_data
+from starter.ml.model import inference, compute_model_metrics
+import pickle
+from sklearn.model_selection import train_test_split
+import pandas as pd
 
-
-def data_slicing(test, cat_features, trained_model, encoder, lb, col):
+def data_slicing(data, cat_features):
     """Function for data slicing model performance given certain categorical column"""
+    train, test = train_test_split(data, test_size=0.20)
 
-    # get distinct column category value
-    unique_values = test[col].unique()
+    model = pickle.load(open("./model/model.pkl", "rb"))
+    encoder = pickle.load(open("./model/encoder.pkl", "rb"))
+    lb = pickle.load(open("./model/lb.pkl", "rb"))
+    slice_result = {'feature': [], 'category': [], 'precision': [], 'recall': [], 'Fbeta': []}
 
-    # iterate each value and record the metrics
-    for val in unique_values:
-        # Fix the feature
-        idx = test[col] == val
-        temp_test = test[idx]
+    for cat in cat_features:
+        for cls in test[cat].unique():
+            df_temp = test[test[cat] == cls]
 
-        # Process this subset of data for testing
-        X_test, y_test, encoder, lb = process_data(
-            temp_test,
-            categorical_features=cat_features,
-            label="salary",
-            training=False,
-            encoder=encoder,
-            lb=lb,
-        )
+            X_test, y_test, _, _ = process_data(
+                df_temp, categorical_features=cat_features, label='salary', training=False,
+                encoder=encoder, lb=lb
+            )
 
-        # Do the inference and Compute the metrics
-        predictions = inference(trained_model, X_test)
-        precision, recall, fbeta = compute_model_metrics(y_test, predictions)
+            y_pred = model.predict(X_test)
 
-        # output the result to slice_output.txt
-#        dirname = os.path.dirname(__file__)
-#        with open(os.path.join(dirname, "../screenshots/slice_output.txt"), "w") as f:
-        with open("./screenshots/slice_output.txt", "w") as f:
-            f.write(f"{col}\n")
-            for value in unique_values:
-                f.write(f"\t {value.strip()}\n")
-                f.write(f"\t\t precision:{precision} recall:{recall} fbeta:{fbeta}\n")
+            precision, recall, fbeta = compute_model_metrics(y_test, y_pred)
+            slice_result['feature'].append(cat)
+            slice_result['category'].append(cls)
+            slice_result['precision'].append(precision)
+            slice_result['recall'].append(recall)
+            slice_result['Fbeta'].append(fbeta)
+
+    df = pd.DataFrame.from_dict(slice_result)
+    df.to_csv('slice_output.txt', index=False)

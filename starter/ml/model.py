@@ -5,11 +5,18 @@ Date: 11/03/2025
 """
 from sklearn.metrics import fbeta_score, precision_score, recall_score
 from sklearn.ensemble import RandomForestClassifier
+import logging
+
+# Initialising the logger
+logging.basicConfig(filename='./logs.log',
+                    level=logging.INFO,
+                    format="%(name)s - %(levelname)s - %(message)s")
+logger = logging.getLogger(__name__)
 
 # Optional: implement hyperparameter tuning.
 def train_model(X_train, y_train):
     """
-    Trains a machine learning model and returns it.
+    Trains a Random Forest Classifier machine learning model and returns it.
 
     Inputs
     ------
@@ -43,6 +50,7 @@ def compute_model_metrics(y, preds):
     recall : float
     fbeta : float
     """
+    logging.info("Computing model metrics....")
     fbeta = fbeta_score(y, preds, beta=1, zero_division=1)
     precision = precision_score(y, preds, zero_division=1)
     recall = recall_score(y, preds, zero_division=1)
@@ -63,6 +71,7 @@ def inference(model, X):
     preds : np.array
         Predictions from the model.
     """
+    logging.info("Running model inference.....")
     predictions = model.predict(X)
     return predictions
 
