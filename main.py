@@ -61,7 +61,7 @@ app = FastAPI()
 
 @app.get("/")
 async def welcome_message():
-    return {"Greetings": "Welcome to the Income Prediction API"}
+    return {'message': '"Welcome to the Income Prediction API'}
 
 
 @app.post("/predict")
@@ -92,4 +92,4 @@ async def predict(input_data: InputData):
     )
     output = inference(model=model, X=X)[0]
     str_out = '<=50K' if output == 0 else '>50K'
-    return {"pred": str_out}
+    return {"Predicted Income": str_out}
