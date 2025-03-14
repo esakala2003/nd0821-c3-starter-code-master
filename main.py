@@ -6,19 +6,14 @@ Date: 12/03/2025
 """
 import pandas as pd
 
-#from starter.ml.model import train_model, inference
 from starter.ml.data import process_data
 from starter.ml.model import inference
-from starter.train_model import train_save_model
-
 from fastapi import FastAPI
 import pickle
-# BaseModel from Pydantic is used to define data objects
 from pydantic import BaseModel, Field
 import os
 import logging
 import uvicorn
-import numpy as np
 
 
 logging.basicConfig(level=logging.INFO, format="%(name)s - %(levelname)s - %(message)s")
@@ -35,6 +30,7 @@ if "DYNO" in os.environ and os.path.isdir(".dvc"):
         logger.info("DVC Pull worked.")
     logger.info('removing dvc files')
     os.system("rm -r .dvc .apt/usr/lib/dvc")
+
 
 class InputData(BaseModel):
     # Using the first row of census.csv as sample
@@ -53,12 +49,14 @@ class InputData(BaseModel):
     hours_per_week: int = Field(None, example=40)
     native_country: str = Field(None, example='United-States')
 
+
 # get encoder, trained model
 model = pickle.load(open("./model/model.pkl", "rb"))
 encoder = pickle.load(open("./model/encoder.pkl", "rb"))
 lb = pickle.load(open("./model/lb.pkl", "rb"))
 
 app = FastAPI()
+
 
 @app.get("/")
 async def welcome_message():
@@ -69,7 +67,6 @@ async def welcome_message():
 async def predict(input_data: InputData):
     logger.info("starting POST request")
     """POST method for model inference"""
-
 
     cat_features = [
         "workclass",
@@ -84,7 +81,7 @@ async def predict(input_data: InputData):
     sample = {key.replace('_', '-'): [value] for key, value in input_data.__dict__.items()}
     input_data = pd.DataFrame.from_dict(sample)
     input_data = input_data.dropna()
-    X, _, _, _ = process_data(
+    x, _, _, _ = process_data(
         input_data,
         categorical_features=cat_features,
         label=None,
@@ -92,7 +89,7 @@ async def predict(input_data: InputData):
         encoder=encoder,
         lb=lb
     )
-    output = inference(model=model, X=X)[0]
+    output = inference(model=model, X=x)[0]
     str_out = '<=50K' if output == 0 else '>50K'
     return {"Predicted Income": str_out}
 

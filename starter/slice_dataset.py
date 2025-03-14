@@ -1,9 +1,20 @@
+"""
+Module for creating slices and computing prediction metrics on them.
+"""
+
 import os
 from starter.ml.data import process_data
 from starter.ml.model import inference, compute_model_metrics
 import pickle
 from sklearn.model_selection import train_test_split
 import pandas as pd
+import logging
+
+# Initialising the logger
+logging.basicConfig(filename='./logs.log',
+                    level=logging.INFO,
+                    format="%(name)s - %(levelname)s - %(message)s")
+logger = logging.getLogger(__name__)
 
 def data_slicing(data, cat_features):
     """Function for data slicing model performance given certain categorical column"""
@@ -34,3 +45,4 @@ def data_slicing(data, cat_features):
 
     df = pd.DataFrame.from_dict(slice_result)
     df.to_csv('slice_output.txt', index=False)
+    logger.info(f"Slice output saves as slice_output.txt")

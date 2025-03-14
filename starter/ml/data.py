@@ -6,7 +6,6 @@ Date: 11/03/2025
 import numpy as np
 from sklearn.preprocessing import LabelBinarizer, OneHotEncoder
 import pandas as pd
-from sklearn.model_selection import train_test_split
 import logging
 
 # Initialising the logger

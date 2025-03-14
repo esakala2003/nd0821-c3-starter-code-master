@@ -1,5 +1,7 @@
+"""
+Module for checking if the test function conform to the requirements of the project rubic
+"""
 from os import path
-
 import argparse
 import importlib
 import inspect
