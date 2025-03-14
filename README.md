@@ -1,5 +1,6 @@
 # Project Overview
 This project is part of the Udacity MP DevOps nanodegree course. THe main aim is to deploy a ML Model to a cloud platform using FastAPI.
+Project can be found on GitHub: https://github.com/esakala2003/nd0821-c3-starter-code-master
 
 # Project Description
 The project deploys a Random Forest Classifier trained using Census Income data from UC Irvine Machine Learning Repository.
