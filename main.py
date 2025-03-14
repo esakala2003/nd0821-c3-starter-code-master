@@ -82,6 +82,7 @@ async def predict(input_data: InputData):
     ]
     sample = {key.replace('_', '-'): [value] for key, value in input_data.__dict__.items()}
     input_data = pd.DataFrame.from_dict(sample)
+    input_data = input_data.dropna()
     X, _, _, _ = process_data(
         input_data,
         categorical_features=cat_features,

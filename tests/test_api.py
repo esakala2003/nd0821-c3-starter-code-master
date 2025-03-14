@@ -51,20 +51,20 @@ def test_post_below_50k():
     """ Test the output for salary is <50k """
 
     response = client.post('/predict', json={
-        "age": 39,
-        "workclass": "State-gov",
-        "fnlgt": 77516,
-        "education": "Bachelors",
-        "education-num": 10,
-        "marital-status": "Never-married",
-        "occupation": "Adm-clerical",
-        "relationship": "Not-in-family",
+        "age": 32,
+        "workclass": "Private",
+        "fnlgt": 27882,
+        "education": "Some-college",
+        "education_num": 10,
+        "marital_status": "Never-married",
+        "occupation": "Machine-op-inspct",
+        "relationship": "Other-relative",
         "race": "White",
-        "sex": "Male",
-        "capital-gain": 2170,
-        "capital-loss": 0,
-        "hours-per-week": 40,
-        "native-country": "United-States"
+        "sex": "Female",
+        "capital_gain": 0,
+        "capital_loss": 2205,
+        "hours_per_week": 40,
+        "native_country": "Holand-Netherlands"
     })
 
     assert response.status_code == 200
