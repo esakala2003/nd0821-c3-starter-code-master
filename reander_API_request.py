@@ -1,20 +1,20 @@
 import json
 import requests
 
-data = {"age": 52,
-        "workclass": "Self-emp-inc",
-        "fnlgt": 287927,
-        "education": "HS-grad",
-        "education_num": 9,
-        "marital_status": "Married-civ-spouse",
-        "occupation": "Exec-managerial",
-        "relationship": "Wife",
+data = {"age": 32,
+        "workclass": "Private",
+        "fnlgt": 27882,
+        "education": "Some-college",
+        "education_num": 10,
+        "marital_status": "Never-married",
+        "occupation": "Machine-op-inspct",
+        "relationship": "Other-relative",
         "race": "White",
         "sex": "Female",
-        "capital_gain": 15024,
-        "capital_loss": 0,
+        "capital_gain": 0,
+        "capital_loss": 2205,
         "hours_per_week": 40,
-        "native_country": "United-States"
+        "native_country": "Holand-Netherlands"
         }
 
 response = requests.post(
