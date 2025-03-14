@@ -17,6 +17,7 @@ import pickle
 from pydantic import BaseModel, Field
 import os
 import logging
+import uvicorn
 import numpy as np
 
 
@@ -95,5 +96,5 @@ async def predict(input_data: InputData):
     str_out = '<=50K' if output == 0 else '>50K'
     return {"Predicted Income": str_out}
 
-    if __name__ == '__main__':
-        uvicorn.run('main:app', host='0.0.0.0', port=5000, reload=True)
+if __name__ == '__main__':
+    uvicorn.run('main:app', host='0.0.0.0', port=5000, reload=True)
