@@ -94,3 +94,9 @@ async def predict(input_data: InputData):
     output = inference(model=model, X=X)[0]
     str_out = '<=50K' if output == 0 else '>50K'
     return {"Predicted Income": str_out}
+
+    if __name__ == '__main__':
+        config = uvicorn.config("main:app", host="0.0.0.0",
+                                reload=True, port=8080, log_level="info")
+        server = uvicorn.Server(config)
+        server.run()
