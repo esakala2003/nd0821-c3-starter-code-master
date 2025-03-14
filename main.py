@@ -96,7 +96,4 @@ async def predict(input_data: InputData):
     return {"Predicted Income": str_out}
 
     if __name__ == '__main__':
-        config = uvicorn.config("main:app", host="0.0.0.0",
-                                reload=True, port=8080, log_level="info")
-        server = uvicorn.Server(config)
-        server.run()
+        uvicorn.run('main:app', host='0.0.0.0', port=5000, reload=True)
